@@ -1,0 +1,9 @@
+en:
+  js:
+    filters:
+      bookmarks:
+        none: "No bookmarks"
+      suggested:
+        title: "Suggested"
+        help: "Topics that are related to this topic"
+        none: "No suggested topics"

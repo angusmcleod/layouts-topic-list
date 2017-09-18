@@ -1,0 +1,22 @@
+#suggested-topics {
+  display: none;
+}
+
+a.widget-link.list-title {
+  color: $primary;
+  padding: 0 8px;
+  margin-right: 0;
+  text-decoration: none;
+
+  &:first-of-type {
+    padding-left: 0;
+  }
+
+  &:last-of-type {
+    border-right: none;
+  }
+
+  &.active {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,7 @@
+plugins:
+  layouts_topic_list_bookmarks:
+    client: true
+    default: true
+  layouts_topic_list_suggested:
+    client: true
+    default: true
