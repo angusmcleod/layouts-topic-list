@@ -3,19 +3,31 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import RawHtml from 'discourse/widgets/raw-html';
 import { h } from 'virtual-dom';
 
-export default createWidget('pavilion-topics', {
-  tagName: 'div.pavilion-topics',
-  buildKey: (attrs) => 'pavilion-topics',
+export default createWidget('topic-list', {
+  tagName: 'div',
+  buildKey: (attrs) => 'topic-list',
 
   defaultState(attrs) {
+    let currentType = null;
+
+    if (attrs.topic) {
+      currentType = 'suggested'
+    } else {
+      currentType = 'bookmarks'
+    }
+
     return {
       gotBookmarks: false,
       bookmarks: [],
-      currentType: attrs.topic ? 'suggested' : 'bookmarks'
+      currentType
     }
   },
 
-  topicList(topics) {
+  topicList(topics, loginRequired) {
+    if (loginRequired && !this.currentUser) {
+      return this.attach('login-required');
+    }
+
     if (!topics || topics.length < 1) {
       return [ h('li', I18n.t(`filters.${this.state.currentType}.none`)) ];
     }
@@ -33,11 +45,11 @@ export default createWidget('pavilion-topics', {
     if (!topic) return [];
 
     let topics = topic.get('details.suggested_topics');
-    return this.topicList(topics);
+    return this.topicList(topics, false);
   },
 
   bookmarks() {
-    return this.topicList(this.state.bookmarks);
+    return this.topicList(this.state.bookmarks, true);
   },
 
   getBookmarks() {
@@ -70,8 +82,9 @@ export default createWidget('pavilion-topics', {
 
   html(attrs, state) {
     let contents = [];
+    const { currentUser } = this;
 
-    if (!state.gotBookmarks && this.siteSettings.layouts_topic_list_bookmarks) {
+    if (currentUser && this.siteSettings.layouts_topic_list_bookmarks && !state.gotBookmarks) {
       this.getBookmarks();
     }
 
@@ -85,9 +98,10 @@ export default createWidget('pavilion-topics', {
       titleContents.push(this.buildTitle('suggested'));
     }
 
-    contents.push(h('div.widget-multi-title', titleContents));
-
-    contents.push(h('div.widget-list', h('ul', this[state.currentType]())));
+    contents.push([
+      h('div.widget-multi-title', titleContents),
+      h('div.widget-list', h('ul', this[state.currentType]()))
+    ]);
 
     if (attrs.editing) {
       contents.push(this.attach('app-edit', {
@@ -98,9 +112,7 @@ export default createWidget('pavilion-topics', {
       }));
     }
 
-    let html = [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
-
-    return html;
+    return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
 
   showList(currentType) {
