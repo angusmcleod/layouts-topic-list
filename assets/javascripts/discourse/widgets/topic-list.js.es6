@@ -4,7 +4,7 @@ import RawHtml from 'discourse/widgets/raw-html';
 import { h } from 'virtual-dom';
 
 export default createWidget('topic-list', {
-  tagName: 'div',
+  tagName: 'div.layout.layouts-topic-list',
   buildKey: (attrs) => 'topic-list',
 
   defaultState(attrs) {
