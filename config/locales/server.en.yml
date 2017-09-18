@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    layouts_topic_list_bookmarks: "Enable the bookmarks topic list in the layouts topic list widget"
+    layouts_topic_list_suggested: "Enable the suggested topic list in the layouts topic list widget"
