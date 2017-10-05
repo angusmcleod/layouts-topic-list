@@ -8,33 +8,30 @@ export default createWidget('categories', {
   tagName: 'div',
   buildKey: (attrs) => 'categories',
 
-  defaultState(attrs) {
-    let currentType = null;
-
-    if (attrs.topic) {
-      currentType = 'suggested'
-    } else {
-      currentType = 'bookmarks'
-    }
-
-    return {
-      gotBookmarks: false,
-      bookmarks: [],
-      currentType
-    }
-  },
-
   renderCategory(cat) {
     return h('', [this.attach('category-link', {category: cat}), "" + cat.topicTrackingState.countUnread(cat.id)])
   },
 
   html(attrs, state) {
-    console.log(Discourse.Category.list())
+    let contents = [];
+    let all_cats = Discourse.Category.list(); 
+    let favs = all_cats
+                .filter(x => x.notification_level > 1)
+                .map(x => x.id);
 
-    let contents = [
-      Discourse.Category.list().map(x => this.renderCategory(x))
-    ];
 
+    if (favs.length > 0) {
+      contents = all_cats.filter(x => favs.includes(x.id))
+                         .map(x => this.renderCategory(x));
+
+      contents.push(h('', new RawHtml({html: '<hr>'})));
+    } 
+
+    contents = contents.concat(all_cats
+                                .filter(x => !favs.includes(x.id))
+                                .map(x => this.renderCategory(x)));
+
+    console.log(favs, contents);
     return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
 
