@@ -8,8 +8,28 @@ export default createWidget('categories', {
   tagName: 'div',
   buildKey: (attrs) => 'categories',
 
-  renderCategory(cat) {
-    return h('', [this.attach('category-link', {category: cat}), "" + cat.topicTrackingState.countUnread(cat.id)])
+  renderCategory(cat, opts) {
+
+    if ((!cat) ||
+          (!opts.allowUncategorized &&
+           cat.id === Discourse.Site.currentProp("uncategorized_category_id") &&
+           Discourse.SiteSettings.suppress_uncategorized_badge
+          )
+       ) return [];
+
+    let contents = [this.attach('category-link', {category: cat}, opts)];
+
+    if (opts.render_children && cat.has_children && cat.show_subcategory_list) {
+      contents.push(h('ul.subcat-list', opts.all_cats
+                            .filter(x => x.parent_category_id == cat.id)
+                            .map(c => this.renderCategory(c,
+                                      {render_children: false, categoryStyle: 'none'}))));
+
+    } else {
+      console.log(cat.topicTrackingState.countUnread(cat.id));
+      contents.push(new RawHtml({html: '' + cat.topicTrackingState.countUnread(cat.id)}));
+    }
+    return h('li', contents)
   },
 
   html(attrs, state) {
@@ -21,18 +41,22 @@ export default createWidget('categories', {
 
 
     if (favs.length > 0) {
-      contents = all_cats.filter(x => favs.includes(x.id))
-                         .map(x => this.renderCategory(x));
+      contents.push(h('ul', all_cats
+                              .filter(x => favs.includes(x.id))
+                              .map(x => this.renderCategory(x, {render_children: false}))));
 
-      contents.push(h('', new RawHtml({html: '<hr>'})));
+      contents.push(h('hr'));
     } 
 
-    contents = contents.concat(all_cats
-                                .filter(x => !favs.includes(x.id))
-                                .map(x => this.renderCategory(x)));
+    let remaining_cats = all_cats.filter(x => !favs.includes(x.id));
 
-    console.log(favs, contents);
-    return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
+    contents.push(h('ul.cat-list', remaining_cats
+                            .filter(x => !x.parent_category_id)
+                            .map(x => this.renderCategory(x,
+                                  {render_children: true, all_cats: remaining_cats}))));
+    console.log(all_cats, contents);
+    return contents;
+    // return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
 
   showList(currentType) {
