@@ -1,10 +1,10 @@
-# name: layouts-topic-list
-# about: A topic list widget for the layouts plugin
+# name: layouts-categories
+# about: A widget that lists categories for the layouts plugin
 # version: 0.1
-# authors: angus
+# authors: Ben
 
-register_asset 'stylesheets/layouts-topic-list.scss'
+register_asset 'stylesheets/categories.scss'
 
 after_initialize do
-  DiscourseLayouts::WidgetHelper.add_widget('topic-list')
+  DiscourseLayouts::WidgetHelper.add_widget('categories')
 end
