@@ -1,22 +1,48 @@
-.cat-list {
-  list-style: none;
-  li.selected a {
-    font-style: italic;
-    &::after {
-      font-style: italic;
-      content: "*"
+.categories-widget {
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 5px;
+
+    a {
+      color: #999999;
+    }
+
+    li {
+      margin: 2px;
+
+      &.selected a {
+        font-weight: bold;
+      }
+    }
+
+    &.cat-list, &.subcat-list {
+      li a .d-label > span {
+        border-left: 2px solid transparent;
+        padding: 2px;
+      }
+      li.selected a .d-label > span {
+        border-left-width: 4px;
+      }
+    }
+
+    &.general a {
+      font-size: 0.8em;
     }
   }
-  .subcat-list {
-    list-style: none;
-  }
-}
 
-.genlink {
-  list-style: none;
-  a {
-    font-size: 0.8em;
-    color: #999999;
+  .badge-notification {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: #999;
+    font-weight: normal;
+    margin-left: 2px;
+    font-size: 0.75em;
+    &.unread-posts {
+      border: 1px solid #eee;
+    }
+    &.new-posts {
+      background-color: #eee;
+    }
   }
-
 }
