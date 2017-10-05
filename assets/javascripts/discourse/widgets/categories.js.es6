@@ -4,6 +4,13 @@ import RawHtml from 'discourse/widgets/raw-html';
 import CategoryLink from 'discourse/widgets/category-link';
 import { h } from 'virtual-dom';
 
+const LINKS = [
+  { route: 'faq', className: 'faq-link', label: 'faq' },
+  { route: 'about', className: 'about-link', label: 'about.simple_title' },
+  { route: 'tos', className: 'faq-link', label: 'terms_of_service' },
+  { route: 'privacy', className: 'faq-link', label: 'privacy' }
+]
+
 export default createWidget('categories', {
   tagName: 'div',
   buildKey: (attrs) => 'categories',
@@ -22,8 +29,10 @@ export default createWidget('categories', {
     if (opts.render_children && cat.has_children && cat.show_subcategory_list) {
       contents.push(h('ul.subcat-list', opts.all_cats
                             .filter(x => x.parent_category_id == cat.id)
-                            .map(c => this.renderCategory(c,
-                                      {render_children: false, categoryStyle: 'none'}))));
+                            .map(c => this.renderCategory(c, {
+                                        render_children: false,
+                                        selected_cat_id: opts.selected_cat_id,
+                                        categoryStyle: 'none'}))));
 
     } else {
       let c_unread = cat.topicTrackingState.countUnread(cat.id);
@@ -46,6 +55,7 @@ export default createWidget('categories', {
 
   html(attrs, state) {
     let contents = [];
+    let cur_cat_id = attrs.navCategory ? attrs.navCategory.id : null;
     let all_cats = Discourse.Category.list(); 
     let favs = all_cats
                 .filter(x => x.notification_level > 1)
@@ -57,7 +67,7 @@ export default createWidget('categories', {
                               .filter(x => favs.includes(x.id))
                               .map(x => this.renderCategory(x, {
                                     render_children: false,
-                                    selected_cat_id: attrs.navCategory.id}))));
+                                    selected_cat_id: cur_cat_id}))));
 
       contents.push(h('hr'));
     } 
@@ -68,8 +78,14 @@ export default createWidget('categories', {
                             .filter(x => !x.parent_category_id)
                             .map(x => this.renderCategory(x, {
                                     render_children: true,
-                                    selected_cat_id: attrs.navCategory.id,
+                                    selected_cat_id: cur_cat_id,
                                     all_cats: remaining_cats}))));
+
+
+    contents.push(h('ul.genlink',
+      LINKS.map(l => h('li,', this.attach('link', l)))));
+
+    
     return contents;
   },
 
