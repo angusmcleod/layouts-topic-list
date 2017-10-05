@@ -60,7 +60,8 @@ export default createWidget('categories', {
   html(attrs, state) {
     let contents = [];
     let cur_cat_id = attrs.navCategory ? attrs.navCategory.id : null;
-    let all_cats = Discourse.Category.list(); 
+    let suppressed_cats = Discourse.Site.currentProp("suppressed_from_homepage_category_ids");
+    let all_cats = Discourse.Category.list().filter(x => x.id === cur_cat_id || !suppressed_cats.includes(x.id));
     let favs = all_cats
                 .filter(x => x.notification_level > 1)
                 .map(x => x.id);
