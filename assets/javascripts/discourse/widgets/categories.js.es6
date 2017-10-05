@@ -26,7 +26,20 @@ export default createWidget('categories', {
                                       {render_children: false, categoryStyle: 'none'}))));
 
     } else {
-      console.log(cat.topicTrackingState.countUnread(cat.id));
+      let c_unread = cat.topicTrackingState.countUnread(cat.id);
+      let c_new = cat.topicTrackingState.countNew(cat.id);
+      if (c_unread) {
+        contents.push(h('a.badge.new-posts.badge-notification',
+                     {attributes: {href: Ember.get(cat, 'unreadUrl')}},
+                     "" + c_unread));
+
+      }
+      if (c_new) {
+        contents.push(h('a.badge.new-posts.badge-notification',
+                     {attributes: {href: Ember.get(cat, 'newUrl')}},
+                     "" + c_new));
+
+      }
       contents.push(new RawHtml({html: '' + cat.topicTrackingState.countUnread(cat.id)}));
     }
     return h('li', contents)
@@ -41,7 +54,7 @@ export default createWidget('categories', {
 
 
     if (favs.length > 0) {
-      contents.push(h('ul', all_cats
+      contents.push(h('ul.cat-list', all_cats
                               .filter(x => favs.includes(x.id))
                               .map(x => this.renderCategory(x, {render_children: false}))));
 
@@ -54,9 +67,7 @@ export default createWidget('categories', {
                             .filter(x => !x.parent_category_id)
                             .map(x => this.renderCategory(x,
                                   {render_children: true, all_cats: remaining_cats}))));
-    console.log(all_cats, contents);
     return contents;
-    // return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
 
   showList(currentType) {
