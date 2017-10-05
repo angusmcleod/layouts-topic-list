@@ -40,9 +40,8 @@ export default createWidget('categories', {
                      "" + c_new));
 
       }
-      contents.push(new RawHtml({html: '' + cat.topicTrackingState.countUnread(cat.id)}));
     }
-    return h('li', contents)
+    return h('li' + (opts.selected_cat_id === cat.id ? '.selected' : ''), contents)
   },
 
   html(attrs, state) {
@@ -56,7 +55,9 @@ export default createWidget('categories', {
     if (favs.length > 0) {
       contents.push(h('ul.cat-list', all_cats
                               .filter(x => favs.includes(x.id))
-                              .map(x => this.renderCategory(x, {render_children: false}))));
+                              .map(x => this.renderCategory(x, {
+                                    render_children: false,
+                                    selected_cat_id: attrs.navCategory.id}))));
 
       contents.push(h('hr'));
     } 
@@ -65,8 +66,10 @@ export default createWidget('categories', {
 
     contents.push(h('ul.cat-list', remaining_cats
                             .filter(x => !x.parent_category_id)
-                            .map(x => this.renderCategory(x,
-                                  {render_children: true, all_cats: remaining_cats}))));
+                            .map(x => this.renderCategory(x, {
+                                    render_children: true,
+                                    selected_cat_id: attrs.navCategory.id,
+                                    all_cats: remaining_cats}))));
     return contents;
   },
 

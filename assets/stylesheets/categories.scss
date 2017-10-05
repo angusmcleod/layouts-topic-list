@@ -1,5 +1,12 @@
 .cat-list {
   list-style: none;
+  li.selected a {
+    font-style: italic;
+    &::after {
+      font-style: italic;
+      content: "*"
+    }
+  }
   .subcat-list {
     list-style: none;
   }
