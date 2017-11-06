@@ -5,22 +5,22 @@ import { h } from 'virtual-dom';
 
 export default createWidget('topic-list', {
   tagName: 'div',
-  buildKey: (attrs) => 'topic-list',
+  buildKey: () => 'topic-list',
 
   defaultState(attrs) {
     let currentType = null;
 
     if (attrs.topic) {
-      currentType = 'suggested'
+      currentType = 'suggested';
     } else {
-      currentType = 'bookmarks'
+      currentType = 'bookmarks';
     }
 
     return {
       gotBookmarks: false,
       bookmarks: [],
       currentType
-    }
+    };
   },
 
   topicList(topics, loginRequired) {
@@ -37,7 +37,7 @@ export default createWidget('topic-list', {
       return h('li', this.attach('link', { className: 'topic-link',
                                            href: t.get('url'),
                                            contents: () => titleHTML }));
-    })
+    });
   },
 
   suggested() {
@@ -61,7 +61,7 @@ export default createWidget('topic-list', {
       this.state.bookmarks = result.topics;
       this.state.gotBookmarks = true;
       this.scheduleRerender();
-    })
+    });
   },
 
   buildTitle(type) {
@@ -77,7 +77,7 @@ export default createWidget('topic-list', {
       title: `filters.${type}.help`,
       label: `filters.${type}.title`,
       className: classes
-    })
+    });
   },
 
   html(attrs, state) {
