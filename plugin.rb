@@ -6,5 +6,5 @@
 register_asset 'stylesheets/layouts-topic-list.scss'
 
 after_initialize do
-  DiscourseLayouts::WidgetHelper.add_widget('topic-list')
+  DiscourseLayouts::WidgetHelper.add_widget('topic-list', position: 'right', order: 'start')
 end
