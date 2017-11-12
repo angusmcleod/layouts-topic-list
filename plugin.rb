@@ -5,6 +5,6 @@
 
 register_asset 'stylesheets/layouts-topic-list.scss'
 
-after_initialize do
+DiscourseEvent.on(:layouts_ready) do
   DiscourseLayouts::WidgetHelper.add_widget('topic-list', position: 'right', order: 'start')
 end
