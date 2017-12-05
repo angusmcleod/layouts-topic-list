@@ -1,7 +1,21 @@
 import { createWidget } from 'discourse/widgets/widget';
 import { getOwner } from 'discourse-common/lib/get-owner';
-import RawHtml from 'discourse/widgets/raw-html';
+import DiscourseURL from 'discourse/lib/url';
 import { h } from 'virtual-dom';
+
+createWidget('topic-list-item', {
+  tagName: 'li',
+
+  html(attrs) {
+    const title = attrs.topic.get('fancyTitle');
+    return h('span', title);
+  },
+
+  click() {
+    const url = this.attrs.topic.get('url');
+    DiscourseURL.routeTo(url);
+  }
+});
 
 export default createWidget('topic-list', {
   tagName: 'div',
@@ -33,10 +47,7 @@ export default createWidget('topic-list', {
     }
 
     return topics.map((t) => {
-      const titleHTML = new RawHtml({ html: `<span>${t.get('fancyTitle')}</span>` });
-      return h('li', this.attach('link', { className: 'topic-link',
-                                           href: t.get('url'),
-                                           contents: () => titleHTML }));
+      return this.attach('topic-list-item', { topic: t });
     });
   },
 
