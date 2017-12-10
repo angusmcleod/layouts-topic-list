@@ -5,6 +5,6 @@
 
 register_asset 'stylesheets/categories.scss'
 
-after_initialize do
-  DiscourseLayouts::WidgetHelper.add_widget('categories')
+DiscourseEvent.on(:layouts_ready) do
+  DiscourseLayouts::WidgetHelper.add_widget('categories', position: 'left', order: 'start')
 end
