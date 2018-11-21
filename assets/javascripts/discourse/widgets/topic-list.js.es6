@@ -22,18 +22,12 @@ export default createWidget('topic-list', {
   buildKey: () => 'topic-list',
 
   defaultState(attrs) {
-    let currentType = null;
-
-    if (attrs.topic) {
-      currentType = 'suggested';
-    } else {
-      currentType = 'bookmarks';
-    }
-
+    const topicLists = this.siteSettings.layouts_topic_lists.split('|');
     return {
-      gotBookmarks: false,
-      bookmarks: [],
-      currentType
+      gotTopics: false,
+      topics: [],
+      currentType: topicLists[0],
+      topicLists
     };
   },
 
@@ -42,7 +36,9 @@ export default createWidget('topic-list', {
       return this.attach('login-required');
     }
 
-    if (!topics || topics.length < 1) {
+    if (!this.state.gotTopics) {
+      return [ h('div.spinner.small') ];
+    } else if (!topics || topics.length < 1) {
       return [ h('li', I18n.t(`filters.${this.state.currentType}.none`)) ];
     }
 
@@ -51,26 +47,18 @@ export default createWidget('topic-list', {
     });
   },
 
-  suggested() {
-    const topic = this.attrs.topic;
-    if (!topic) return [];
-
-    let topics = topic.get('details.suggested_topics');
-    return this.topicList(topics, false);
+  topics() {
+    return this.topicList(this.state.topics, true);
   },
 
-  bookmarks() {
-    return this.topicList(this.state.bookmarks, true);
-  },
-
-  getBookmarks() {
+  getTopics() {
     const store = getOwner(this).lookup('store:main');
 
     store.findFiltered('topicList', {
-      filter: 'bookmarks'
+      filter: this.state.currentType
     }).then((result) => {
-      this.state.bookmarks = result.topics;
-      this.state.gotBookmarks = true;
+      this.state.topics = result.topics;
+      this.state.gotTopics = true;
       this.scheduleRerender();
     });
   },
@@ -95,39 +83,27 @@ export default createWidget('topic-list', {
     let contents = [];
     const { currentUser } = this;
 
-    if (currentUser && this.siteSettings.layouts_topic_list_bookmarks && !state.gotBookmarks) {
-      this.getBookmarks();
+    if (currentUser) {
+      this.getTopics();
     }
 
     let titleContents = [];
 
-    if (this.siteSettings.layouts_topic_list_bookmarks) {
-      titleContents.push([this.buildTitle('bookmarks')]);
-    }
-
-    if (attrs.topic && this.siteSettings.layouts_topic_list_suggested) {
-      titleContents.push(this.buildTitle('suggested'));
-    }
+    this.state.topicLists.forEach((list) => {
+      titleContents.push([this.buildTitle(list)]);
+    });
 
     contents.push([
       h('div.widget-multi-title', titleContents),
-      h('div.widget-list', h('ul', this[state.currentType]()))
+      h('div.widget-list', h('ul', this.topicList(this.state.topics, true)))
     ]);
-
-    if (attrs.editing) {
-      contents.push(this.attach('app-edit', {
-        side: attrs.side,
-        index: attrs.index,
-        name: 'topic-list',
-        noRemove: true
-      }));
-    }
 
     return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
 
   showList(currentType) {
     this.state.currentType = currentType;
+    this.state.gotTopics = false;
     this.scheduleRerender();
   }
 });

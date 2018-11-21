@@ -1,7 +1,10 @@
 plugins:
-  layouts_topic_list_bookmarks:
+  layouts_topic_lists:
     client: true
-    default: true
-  layouts_topic_list_suggested:
-    client: true
-    default: true
+    type: list
+    default: 'latest'
+    choices:
+      - latest
+      - new
+      - unread
+      - top
