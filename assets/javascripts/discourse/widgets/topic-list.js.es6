@@ -55,7 +55,10 @@ export default createWidget('topic-list', {
     const store = getOwner(this).lookup('store:main');
 
     store.findFiltered('topicList', {
-      filter: this.state.currentType
+      filter: this.state.currentType,
+      params: {
+        list_widget: true
+      }
     }).then((result) => {
       this.state.topics = result.topics;
       this.state.gotTopics = true;
@@ -83,19 +86,19 @@ export default createWidget('topic-list', {
     let contents = [];
     const { currentUser } = this;
 
-    if (currentUser) {
+    if (currentUser && !state.gotTopics) {
       this.getTopics();
     }
 
     let titleContents = [];
 
-    this.state.topicLists.forEach((list) => {
+    state.topicLists.forEach((list) => {
       titleContents.push([this.buildTitle(list)]);
     });
 
     contents.push([
       h('div.widget-multi-title', titleContents),
-      h('div.widget-list', h('ul', this.topicList(this.state.topics, true)))
+      h('div.widget-list', h('ul', this.topicList(state.topics, true)))
     ]);
 
     return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];

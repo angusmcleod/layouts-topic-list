@@ -1,3 +1,4 @@
 en:
   site_settings:
     layouts_topic_lists: "Topic lists for layouts topic list widget"
+    layouts_topic_lists_limit: "Number of topics to display in topic lists widget"

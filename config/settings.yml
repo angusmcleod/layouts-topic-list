@@ -8,3 +8,4 @@ plugins:
       - new
       - unread
       - top
+  layouts_topic_lists_limit: 10
