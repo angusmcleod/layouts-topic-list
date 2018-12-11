@@ -5,7 +5,9 @@
 
 DiscourseEvent.on(:layouts_ready) do
   DiscourseLayouts::WidgetHelper.add_widget('topic-list', position: 'right', order: 'start')
+end
 
+after_initialize do
   TopicQuery.public_valid_options << :list_widget
 
   module TopicQueryTopicListWidgetExtension
