@@ -8,4 +8,5 @@ plugins:
       - new
       - unread
       - top
+      - bookmarks
   layouts_topic_lists_limit: 10

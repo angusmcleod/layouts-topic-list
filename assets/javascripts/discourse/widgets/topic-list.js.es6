@@ -3,7 +3,7 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { h } from 'virtual-dom';
 
-createWidget('topic-list-item', {
+createWidget('layouts-topic-list-item', {
   tagName: 'li',
 
   html(attrs) {
@@ -17,9 +17,9 @@ createWidget('topic-list-item', {
   }
 });
 
-export default createWidget('topic-list', {
+export default createWidget('layouts-topic-list', {
   tagName: 'div',
-  buildKey: () => 'topic-list',
+  buildKey: () => 'layouts-topic-list',
 
   defaultState(attrs) {
     const topicLists = this.siteSettings.layouts_topic_lists.split('|');
@@ -43,7 +43,7 @@ export default createWidget('topic-list', {
     }
 
     return topics.map((t) => {
-      return this.attach('topic-list-item', { topic: t });
+      return this.attach('layouts-topic-list-item', { topic: t });
     });
   },
 
@@ -60,9 +60,11 @@ export default createWidget('topic-list', {
         list_widget: true
       }
     }).then((result) => {
-      this.state.topics = result.topics;
-      this.state.gotTopics = true;
-      this.scheduleRerender();
+      if (this.state) {
+        this.state.topics = result.topics;
+        this.state.gotTopics = true;
+        this.scheduleRerender();
+      }
     });
   },
 
@@ -86,20 +88,24 @@ export default createWidget('topic-list', {
     let contents = [];
     const { currentUser } = this;
 
-    if (currentUser && !state.gotTopics) {
-      this.getTopics();
+    if (state) {
+      if (currentUser && !state.gotTopics) {
+        this.getTopics();
+      }
+
+      let titleContents = [];
+
+      if (state.topicLists) {
+        state.topicLists.forEach((list) => {
+          titleContents.push([this.buildTitle(list)]);
+        });
+      }
+
+      contents.push([
+        h('div.widget-multi-title', titleContents),
+        h('div.widget-list', h('ul', this.topicList(state.topics, true)))
+      ]);
     }
-
-    let titleContents = [];
-
-    state.topicLists.forEach((list) => {
-      titleContents.push([this.buildTitle(list)]);
-    });
-
-    contents.push([
-      h('div.widget-multi-title', titleContents),
-      h('div.widget-list', h('ul', this.topicList(state.topics, true)))
-    ]);
 
     return [ h('div.widget-container.app', h('div.widget-inner', contents)) ];
   },
