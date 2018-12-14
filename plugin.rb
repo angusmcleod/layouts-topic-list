@@ -9,6 +9,7 @@ end
 
 after_initialize do
   TopicQuery.public_valid_options << :list_widget
+  TopicQuery.valid_options << :list_widget
 
   module TopicQueryTopicListWidgetExtension
     def per_page_setting
