@@ -7,8 +7,12 @@ createWidget('layouts-topic-list-item', {
   tagName: 'li',
 
   html(attrs) {
-    const title = attrs.topic.get('fancyTitle');
-    return h('span', title);
+    const uni_title = attrs.topic.get('unicode_title');
+    const title = uni_title ? uni_title : attrs.topic.get('title');
+
+    return h('span',
+      title.replace(/<[^>]*>/g, '').replace(/:[a-zA-Z]*:/g, '')
+    );
   },
 
   click() {
