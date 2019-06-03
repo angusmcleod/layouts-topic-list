@@ -1,14 +1,18 @@
 import { createWidget } from 'discourse/widgets/widget';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
+import { emojiUnescape } from 'discourse/lib/text';
 import { h } from 'virtual-dom';
+import RawHtml from "discourse/widgets/raw-html";
 
 createWidget('layouts-topic-list-item', {
   tagName: 'li',
 
   html(attrs) {
     const title = attrs.topic.get('fancyTitle');
-    return h('span', title);
+    return h('div.title', new RawHtml({
+      html: `<span>${emojiUnescape(title)}</span>`
+    }));
   },
 
   click() {
