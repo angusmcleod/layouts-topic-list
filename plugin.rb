@@ -4,7 +4,7 @@
 # authors: angus
 
 DiscourseEvent.on(:layouts_ready) do
-  DiscourseLayouts::WidgetHelper.add_widget('topic-list', position: 'right', order: 'start')
+  DiscourseLayouts::Widget.add('topic-list', position: 'right', order: 'start')
 end
 
 after_initialize do
