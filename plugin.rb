@@ -1,6 +1,6 @@
 # name: layouts-topic-list
 # about: A topic list widget for the layouts plugin
-# version: 0.1
+# version: 0.2
 # authors: angus
 
 DiscourseEvent.on(:layouts_ready) do
