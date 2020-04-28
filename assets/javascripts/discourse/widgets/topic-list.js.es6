@@ -1,28 +1,21 @@
 import { createWidget } from 'discourse/widgets/widget';
-import { createLayoutsWidget } from 'discourse/plugins/discourse-layouts/discourse/lib/layouts';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { emojiUnescape } from 'discourse/lib/text';
 import { h } from 'virtual-dom';
 import RawHtml from "discourse/widgets/raw-html";
 
-createWidget('layouts-topic-list-item', {
-  tagName: 'li',
+let layoutsError;
+let layouts;
 
-  html(attrs) {
-    const title = attrs.topic.get('fancyTitle');
-    return h('div.title', new RawHtml({
-      html: `<span>${emojiUnescape(title)}</span>`
-    }));
-  },
+try {
+  layouts = requirejs('discourse/plugins/discourse-layouts/discourse/lib/layouts');
+} catch(error) {
+  layouts = { createLayoutsWidget: createWidget };
+  console.error(error);
+}
 
-  click() {
-    const url = this.attrs.topic.get('url');
-    DiscourseURL.routeTo(url);
-  }
-});
-
-export default createLayoutsWidget('topic-list', {
+export default layouts.createLayoutsWidget('topic-list', {
   defaultState(attrs) {
     const topicLists = this.siteSettings.layouts_topic_lists.split('|');
     return {
@@ -116,5 +109,21 @@ export default createLayoutsWidget('topic-list', {
     this.state.currentType = currentType;
     this.state.gotTopics = false;
     this.scheduleRerender();
+  }
+});
+
+createWidget('layouts-topic-list-item', {
+  tagName: 'li',
+
+  html(attrs) {
+    const title = attrs.topic.get('fancyTitle');
+    return h('div.title', new RawHtml({
+      html: `<span>${emojiUnescape(title)}</span>`
+    }));
+  },
+
+  click() {
+    const url = this.attrs.topic.get('url');
+    DiscourseURL.routeTo(url);
   }
 });
