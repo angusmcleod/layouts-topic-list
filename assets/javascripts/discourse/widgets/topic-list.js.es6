@@ -1,4 +1,5 @@
 import { createWidget } from 'discourse/widgets/widget';
+import { createLayoutsWidget } from 'discourse/plugins/discourse-layouts/discourse/lib/layouts';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { emojiUnescape } from 'discourse/lib/text';
@@ -21,10 +22,7 @@ createWidget('layouts-topic-list-item', {
   }
 });
 
-export default createWidget('layouts-topic-list', {
-  tagName: 'div',
-  buildKey: () => 'layouts-topic-list',
-
+export default createLayoutsWidget('topic-list', {
   defaultState(attrs) {
     const topicLists = this.siteSettings.layouts_topic_lists.split('|');
     return {
